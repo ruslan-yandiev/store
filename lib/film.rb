@@ -2,16 +2,23 @@
 #
 # Класс Фильм
 class Film < Product
-  # Объявим методы-геттеры для переменных экземпляра класса Фильм:
-  #
-  # @title — название книги
-  # @year — год выхода фильма
-  # @director — фамилия и имя режиссера
-  attr_reader :title, :year, :director
+  attr_accessor :title, :year, :director
 
-  # В конструкторе класса Film вызовем конструктор класса-родителя Product,
-  # он заполнит переменные экземпляра @price и @amount, а остальные поля,
-  # специфичные только для фильма, заполним мы самостоятельно.
+  # Метод класса from_file считывает данные о фильме из файла, путь к которому
+  # ему передали в качестве параметра и передает их на вход своему же
+  # конструктору с нужными ключами.
+  def self.from_file(file_path)
+    lines = File.readlines(file_path, encoding: 'UTF-8').map { |l| l.chomp }
+
+    self.new(
+      title: lines[0],
+      director: lines[1],
+      year: lines[2].to_i,
+      price: lines[3].to_i,
+      amount: lines[4].to_i
+    )
+  end
+
   def initialize(params)
     super
 
@@ -20,9 +27,15 @@ class Film < Product
     @director = params[:director]
   end
 
-  # Метод to_s возвращает строку с описанием фильма и дергает родительский метод
-  # to_s, чтобы склеить эту строку с ценой и остатком.
   def to_s
     "Фильм «#{@title}», #{@year}, реж. #{@director}, #{super}"
+  end
+
+  def update(params)
+    super
+
+    @title = params[:title] if params[:title]
+    @year = params[:year] if params[:year]
+    @director = params[:director] if params[:director]
   end
 end
